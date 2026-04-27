@@ -18,7 +18,7 @@ type TaskWithSpace = Tables<'tasks'> & {
   spaces: { name: string } | null;
 };
 
-export function InboxContent() {
+export function InboxContent({ filter }: { filter?: 'starred' | 'archive' }) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [tasks, setTasks] = useState<TaskWithSpace[]>([]);
@@ -47,7 +47,9 @@ export function InboxContent() {
             <div className="h-8 w-8 rounded-lg bg-[#51DD7D]/10 flex items-center justify-center">
               <InboxIcon className="h-4 w-4 text-[#51DD7D]" />
             </div>
-            <h1 className="text-xl font-bold text-white">Inbox</h1>
+                <h1 className="text-xl font-bold text-white">
+              {filter === 'starred' ? 'Destacados' : filter === 'archive' ? 'Archivados' : 'Inbox'}
+            </h1>
           </div>
         </div>
         

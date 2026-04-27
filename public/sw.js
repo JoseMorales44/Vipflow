@@ -1,7 +1,7 @@
 // VipFlow Service Worker - Dev-safe version
 // Clears all caches on activation to prevent stale chunk issues
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 

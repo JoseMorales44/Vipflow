@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Search as SearchIcon,
@@ -638,23 +638,42 @@ import { useUserStore } from "@/store/useUserStore";
 /* --------------------------------- Layout -------------------------------- */
 
 export function TwoLevelSidebar() {
-  const [currentSection, setCurrentSection] = useState("dashboard");
-  
-  // Refactor: using global store
+  const pathname = usePathname();
+  const router = useRouter();
   const { user, org, role, spaces, fetchUserData } = useUserStore();
 
   useEffect(() => {
-    // Only fetch if we don't have data
-    if (!user) {
-      fetchUserData();
-    }
+    if (!user) fetchUserData();
   }, [user, fetchUserData]);
+
+  // Derive active section from the current URL
+  const currentSection = useMemo(() => {
+    if (pathname.startsWith('/dashboard/spaces')) return 'spaces';
+    if (pathname.startsWith('/dashboard/inbox')) return 'inbox';
+    if (pathname.startsWith('/dashboard/kanban')) return 'kanban';
+    if (pathname.startsWith('/dashboard/teams')) return 'teams';
+    if (pathname.startsWith('/dashboard/settings')) return 'settings';
+    return 'dashboard';
+  }, [pathname]);
+
+  // Navigate to the primary route of each section on icon click
+  const handleSectionChange = (section: string) => {
+    const primaryRoutes: Record<string, string> = {
+      dashboard: '/dashboard',
+      kanban: '/dashboard/kanban',
+      spaces: spaces.length > 0 ? `/dashboard/spaces/${spaces[0].id}` : '/dashboard/spaces',
+      inbox: '/dashboard/inbox',
+      teams: '/dashboard/teams',
+      settings: '/dashboard/settings',
+    };
+    router.push(primaryRoutes[section] || '/dashboard');
+  };
 
   return (
     <div className="flex flex-row h-full">
       <IconNavigation 
         activeSection={currentSection} 
-        onSectionChange={setCurrentSection} 
+        onSectionChange={handleSectionChange} 
         role={role || 'worker'} 
       />
       <DetailSidebar 
