@@ -1,57 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { 
   UserMultiple, 
   AddLarge, 
-  MailAll, 
   Copy, 
   Checkmark,
   UserAvatar,
-  TrashCan,
-  Building
+  TrashCan
 } from "@carbon/icons-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { Tables } from "@/types/database";
+
+type MemberWithProfile = Tables<'org_members'> & {
+  profiles: Tables<'profiles'> | null;
+};
 
 export default function TeamsPage() {
-  const [members, setMembers] = useState<any[]>([]);
-  const [org, setOrg] = useState<any>(null);
+  const [members, setMembers] = useState<MemberWithProfile[]>([]);
+  const [org, setOrg] = useState<Tables<'organizations'> | null>(null);
   const [loading, setLoading] = useState(true);
   const [inviteRole, setInviteRole] = useState<string>("worker");
   const [inviteLink, setInviteLink] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const supabase = createClient();
-
-  useEffect(() => {
-    async function loadData() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Get org
-      const { data: membership } = await supabase
-        .from('org_members')
-        .select('org_id, role, organizations(*)')
-        .eq('user_id', user.id)
-        .single();
-      
-      if (membership) {
-        setOrg(membership.organizations);
-        
-        // Get members
-        const { data: membersData } = await supabase
-          .from('org_members')
-          .select('*, profiles(*)')
-          .eq('org_id', membership.org_id);
-        
-        if (membersData) setMembers(membersData);
-      }
-      setLoading(false);
-    }
-    loadData();
-  }, []);
 
   const generateInvite = async () => {
     if (!org) return;
@@ -69,9 +45,9 @@ export default function TeamsPage() {
       .select()
       .single();
 
-    if (data) {
+    if (data && !error) {
       const url = `${window.location.origin}/invite/${data.id}`;
-      setInviteLink(url);
+      requestAnimationFrame(() => setInviteLink(url));
     }
   };
 
@@ -80,6 +56,36 @@ export default function TeamsPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const loadData = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: membership } = await supabase
+      .from('org_members')
+      .select('org_id, role, organizations(*)')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (membership) {
+      setOrg(membership.organizations as unknown as Tables<'organizations'>);
+      
+      const { data: membersData } = await supabase
+        .from('org_members')
+        .select('*, profiles(*)')
+        .eq('org_id', membership.org_id);
+      
+      if (membersData) setMembers(membersData as MemberWithProfile[]);
+    }
+    setLoading(false);
+  }, [supabase]);
+
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      loadData();
+    });
+    return () => cancelAnimationFrame(handle);
+  }, [loadData]);
 
   if (loading) return <div className="p-8 text-neutral-500">Cargando equipo...</div>;
 
@@ -164,7 +170,7 @@ export default function TeamsPage() {
                   <div className="flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-neutral-800 flex items-center justify-center border border-white/10 overflow-hidden">
                       {m.profiles?.avatar_url ? (
-                        <img src={m.profiles.avatar_url} alt="" className="h-full w-full object-cover" />
+                        <Image src={m.profiles.avatar_url} alt="" width={40} height={40} className="h-full w-full object-cover" />
                       ) : (
                         <UserAvatar size={20} className="text-neutral-500" />
                       )}

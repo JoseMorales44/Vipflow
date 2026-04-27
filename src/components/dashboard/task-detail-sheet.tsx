@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { 
   X, 
   Calendar, 
-  Flag, 
-  UserPlus, 
   Send,
   MoreHorizontal,
   Paperclip,
@@ -16,6 +14,16 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { Tables } from "@/types/database";
+import { useCallback } from "react";
+
+type TaskWithProfile = Tables<'tasks'> & {
+  profiles: { full_name: string; avatar_url: string | null } | null;
+};
+
+type CommentWithProfile = Tables<'task_comments'> & {
+  profiles: { full_name: string; avatar_url: string | null } | null;
+};
 
 interface TaskDetailSheetProps {
   taskId: string | null;
@@ -23,19 +31,14 @@ interface TaskDetailSheetProps {
 }
 
 export function TaskDetailSheet({ taskId, onClose }: TaskDetailSheetProps) {
-  const [task, setTask] = useState<any>(null);
-  const [comments, setComments] = useState<any[]>([]);
+  const [task, setTask] = useState<TaskWithProfile | null>(null);
+  const [comments, setComments] = useState<CommentWithProfile[]>([]);
   const [newComment, setNewComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
-    if (taskId) {
-      loadTaskDetails();
-    }
-  }, [taskId]);
-
-  const loadTaskDetails = async () => {
+  const loadTaskDetails = useCallback(async () => {
+    if (!taskId) return;
     setIsLoading(true);
     // 1. Cargar la tarea
     const { data: taskData } = await supabase
@@ -44,7 +47,7 @@ export function TaskDetailSheet({ taskId, onClose }: TaskDetailSheetProps) {
       .eq('id', taskId)
       .single();
     
-    setTask(taskData);
+    setTask(taskData as TaskWithProfile);
 
     // 2. Cargar comentarios
     const { data: commentData } = await supabase
@@ -53,9 +56,16 @@ export function TaskDetailSheet({ taskId, onClose }: TaskDetailSheetProps) {
       .eq('task_id', taskId)
       .order('created_at', { ascending: true });
     
-    setComments(commentData || []);
+    setComments((commentData as CommentWithProfile[]) || []);
     setIsLoading(false);
-  };
+  }, [taskId, supabase]);
+
+  useEffect(() => {
+    if (taskId) {
+      const handle = requestAnimationFrame(() => loadTaskDetails());
+      return () => cancelAnimationFrame(handle);
+    }
+  }, [taskId, loadTaskDetails]);
 
   const handleSendComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +82,7 @@ export function TaskDetailSheet({ taskId, onClose }: TaskDetailSheetProps) {
     });
 
     if (!error) {
-      setNewComment("");
+      requestAnimationFrame(() => setNewComment(""));
       loadTaskDetails(); // Recargar para ver el nuevo comentario
     }
   };
@@ -175,7 +185,7 @@ export function TaskDetailSheet({ taskId, onClose }: TaskDetailSheetProps) {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-xs font-bold text-white">{comment.profiles?.full_name}</span>
-                            <span className="text-[10px] text-zinc-600">{new Date(comment.created_at).toLocaleString()}</span>
+                            <span className="text-[10px] text-zinc-600">{new Date(comment.created_at ?? '').toLocaleString()}</span>
                           </div>
                           <div className="text-sm text-zinc-400 bg-white/[0.03] p-3 rounded-xl border border-white/5">
                             {comment.content}

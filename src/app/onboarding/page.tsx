@@ -73,9 +73,10 @@ export default function OnboardingPage() {
       // ¡Todo listo! Redirigir al dashboard
       router.push("/dashboard/inbox");
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error during setup:", error);
-      alert(`Error al configurar: ${error.message || "Error desconocido"}`);
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      alert(`Error al configurar: ${message}`);
     } finally {
       setIsLoading(false);
     }

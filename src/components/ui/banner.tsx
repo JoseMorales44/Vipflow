@@ -52,7 +52,8 @@ export function Banner({
     if (globalKey) {
       const isClosed = localStorage.getItem(globalKey) === "true";
       if (isClosed) {
-        setOpen(false);
+        const handle = requestAnimationFrame(() => setOpen(false));
+        return () => cancelAnimationFrame(handle);
       }
     }
   }, [globalKey]);

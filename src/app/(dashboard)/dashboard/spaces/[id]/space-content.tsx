@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Plus, 
-  MoreHorizontal, 
+import {
+  Plus,
+  MoreHorizontal,
   Search,
   Settings,
   Users,
@@ -14,10 +14,13 @@ import { cn } from "@/lib/utils";
 import { TaskDetailSheet } from "@/components/dashboard/task-detail-sheet";
 import { SpaceChat } from "@/components/dashboard/space-chat";
 import { AgentPlan } from "@/components/ui/agent-plan";
+import { Tables } from "@/types/database";
+
+import { Column } from "@/types/dashboard";
 
 interface SpaceContentProps {
-  space: any;
-  columns: any[];
+  space: Tables<'spaces'>;
+  columns: Column[];
 }
 
 export function SpaceContent({ space, columns }: SpaceContentProps) {
@@ -37,7 +40,7 @@ export function SpaceContent({ space, columns }: SpaceContentProps) {
             <p className="text-zinc-500 text-xs mt-2 font-medium tracking-wide uppercase">{space.description || 'Sin descripción'}</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-6">
           <div className="flex -space-x-3 mr-4">
             {[1, 2, 3].map((i) => (
@@ -61,48 +64,48 @@ export function SpaceContent({ space, columns }: SpaceContentProps) {
 
       {/* Board Controls / Tabs */}
       <div className="flex items-center gap-8 px-10 py-2 border-b border-white/[0.03]">
-        <button 
+        <button
           onClick={() => setActiveTab('board')}
           className={cn(
             "flex items-center gap-2 text-xs font-bold py-4 border-b-2 transition-all relative",
-            activeTab === 'board' 
-              ? "text-white border-white" 
+            activeTab === 'board'
+              ? "text-white border-white"
               : "text-zinc-600 border-transparent hover:text-zinc-400"
           )}
         >
-            <LayoutGrid className="h-3.5 w-3.5" />
-            Tablero
+          <LayoutGrid className="h-3.5 w-3.5" />
+          Tablero
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('chat')}
           className={cn(
             "flex items-center gap-2 text-xs font-bold py-4 border-b-2 transition-all",
-            activeTab === 'chat' 
-              ? "text-white border-white" 
+            activeTab === 'chat'
+              ? "text-white border-white"
               : "text-zinc-600 border-transparent hover:text-zinc-400"
           )}
         >
-            <MessageSquare className="h-3.5 w-3.5" />
-            Canal de Chat
+          <MessageSquare className="h-3.5 w-3.5" />
+          Canal de Chat
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('roadmap')}
           className={cn(
             "flex items-center gap-2 text-xs font-bold py-4 border-b-2 transition-all",
-            activeTab === 'roadmap' 
-              ? "text-white border-white" 
+            activeTab === 'roadmap'
+              ? "text-white border-white"
               : "text-zinc-600 border-transparent hover:text-zinc-400"
           )}
         >
-            <Milestone className="h-3.5 w-3.5" />
-            Roadmap
+          <Milestone className="h-3.5 w-3.5" />
+          Roadmap
         </button>
-        
+
         <div className="ml-auto flex items-center gap-4">
-            <div className="relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-500 transition-colors" />
-                <input type="text" placeholder="Buscar en este espacio..." className="h-9 w-64 bg-transparent border border-white/[0.05] rounded-xl pl-9 pr-4 text-xs text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-zinc-800" />
-            </div>
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-700 group-hover:text-zinc-500 transition-colors" />
+            <input type="text" placeholder="Buscar en este espacio..." className="h-9 w-64 bg-transparent border border-white/[0.05] rounded-xl pl-9 pr-4 text-xs text-white focus:outline-none focus:border-white/20 transition-all placeholder:text-zinc-800" />
+          </div>
         </div>
       </div>
 
@@ -126,9 +129,9 @@ export function SpaceContent({ space, columns }: SpaceContentProps) {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
-                  {column.tasks?.map((task: any) => (
-                    <div 
-                      key={task.id} 
+                  {column.tasks?.map((task) => (
+                    <div
+                      key={task.id}
                       onClick={() => setSelectedTaskId(task.id)}
                       className="bg-white/[0.02] border border-white/[0.05] p-5 rounded-2xl hover:border-white/20 hover:bg-white/[0.04] hover:scale-[1.02] transition-all cursor-pointer group/card shadow-2xl"
                     >
@@ -150,15 +153,15 @@ export function SpaceContent({ space, columns }: SpaceContentProps) {
                         <div className={cn(
                           "text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter border",
                           task.priority === 'urgent' ? 'bg-red-500/5 text-red-500 border-red-500/10' :
-                          task.priority === 'high' ? 'bg-orange-500/5 text-orange-500 border-orange-500/10' :
-                          'bg-zinc-800/50 text-zinc-500 border-white/[0.03]'
+                            task.priority === 'high' ? 'bg-orange-500/5 text-orange-500 border-orange-500/10' :
+                              'bg-zinc-800/50 text-zinc-500 border-white/[0.03]'
                         )}>
                           {task.priority}
                         </div>
                       </div>
                     </div>
                   ))}
-                  
+
                   <button className="w-full py-4 rounded-2xl border border-dashed border-white/[0.03] text-zinc-700 hover:border-white/10 hover:text-zinc-500 transition-all text-[11px] font-bold uppercase tracking-widest">
                     + Añadir Tarea
                   </button>
@@ -186,14 +189,14 @@ export function SpaceContent({ space, columns }: SpaceContentProps) {
   );
 }
 
-function MessageSquare(props: any) {
-    return (
-        <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    )
+function MessageSquare(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+  )
 }
 
-function Milestone(props: any) {
-    return (
-        <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-    )
+function Milestone(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+  )
 }

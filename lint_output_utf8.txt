@@ -1,0 +1,216 @@
+﻿
+> temp-init@0.1.0 lint C:\Users\jd328\Documents\workVIP\VipFlow
+> eslint
+
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\(auth)\login\page.tsx
+  2:8  warning  'Image' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\(dashboard)\dashboard\inbox\inbox-content.tsx
+  108:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\(dashboard)\dashboard\spaces\[id]\page.tsx
+   5:3   warning  'Plus' is defined but never used            @typescript-eslint/no-unused-vars
+   6:3   warning  'MoreHorizontal' is defined but never used  @typescript-eslint/no-unused-vars
+   7:3   warning  'Search' is defined but never used          @typescript-eslint/no-unused-vars
+   8:3   warning  'Settings' is defined but never used        @typescript-eslint/no-unused-vars
+   9:3   warning  'Users' is defined but never used           @typescript-eslint/no-unused-vars
+  11:10  warning  'Button' is defined but never used          @typescript-eslint/no-unused-vars
+  12:10  warning  'cn' is defined but never used              @typescript-eslint/no-unused-vars
+  57:10  warning  'LayoutGrid' is defined but never used      @typescript-eslint/no-unused-vars
+  57:28  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  63:10  warning  'ListIcon' is defined but never used        @typescript-eslint/no-unused-vars
+  63:26  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\(dashboard)\dashboard\spaces\[id]\space-content.tsx
+   19:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  189:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\(dashboard)\teams\page.tsx
+  58:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\(dashboard)\teams\page.tsx:58:5
+  56 |
+  57 |   useEffect(() => {
+> 58 |     loadData();
+     |     ^^^^^^^^ Avoid calling setState() directly within an effect
+  59 |   }, [loadData]);
+  60 |
+  61 |   const generateInvite = async () => {  react-hooks/set-state-in-effect
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\invite\[id]\page.tsx
+   8:3   warning  'UserFollow' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   9:3   warning  'CheckmarkFilled' is defined but never used                                                                  @typescript-eslint/no-unused-vars
+  19:15  warning  'paramId' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  22:48  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  49:6   warning  React Hook useEffect has a missing dependency: 'supabase'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\layout.tsx
+  5:8  warning  'Script' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\app\onboarding\page.tsx
+  76:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\auth\auth-form.tsx
+  36:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\dashboard\create-task-sheet.tsx
+   8:3   warning  'Flag' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+   9:3   warning  'Tag' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+  12:3   warning  'ChevronDown' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+  18:10  warning  'cn' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+  31:40  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  49:6   warning  React Hook useEffect has a missing dependency: 'supabase'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  88:21  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\dashboard\kanban-board.tsx
+  279:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\dashboard\sidebar.tsx
+  12:3   warning  'Hash' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+  29:40  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  30:34  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  70:6   warning  React Hook useEffect has a missing dependency: 'supabase'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\dashboard\space-chat.tsx
+  41:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\dashboard\space-chat.tsx:41:5
+  39 |   useEffect(() => {
+  40 |     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id || null));
+> 41 |     loadMessages();
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  42 |
+  43 |     const channel = supabase
+  44 |       .channel(`space:${spaceId}`)  react-hooks/set-state-in-effect
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\dashboard\task-detail-sheet.tsx
+   7:3   warning  'Flag' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   8:3   warning  'UserPlus' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  26:36  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  27:44  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  34:7   error    Error: Cannot access variable before it is declared
+
+`loadTaskDetails` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\dashboard\task-detail-sheet.tsx:34:7
+  32 |   useEffect(() => {
+  33 |     if (taskId) {
+> 34 |       loadTaskDetails();
+     |       ^^^^^^^^^^^^^^^ `loadTaskDetails` accessed before it is declared
+  35 |     }
+  36 |   }, [taskId]);
+  37 |
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\dashboard\task-detail-sheet.tsx:38:3
+  36 |   }, [taskId]);
+  37 |
+> 38 |   const loadTaskDetails = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 39 |     setIsLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     // 1. Cargar la tarea
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^
+> 57 |     setIsLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^
+> 58 |   };
+     | ^^^^^ `loadTaskDetails` is declared here
+  59 |
+  60 |   const handleSendComment = async (e: React.FormEvent) => {
+  61 |     e.preventDefault();  react-hooks/immutability
+  36:6   warning  React Hook useEffect has a missing dependency: 'loadTaskDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\ui\agent-plan.tsx
+  7:3  warning  'CircleAlert' is defined but never used  @typescript-eslint/no-unused-vars
+  9:3  warning  'CircleX' is defined but never used      @typescript-eslint/no-unused-vars
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\ui\ai-prompt-box.tsx
+  149:3   warning  'visualizerBars' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  152:22  warning  'setBarHeights' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  153:9   warning  'timerRef' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  164:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\ui\ai-prompt-box.tsx:164:7
+  162 |     } else {
+  163 |       onStopRecording(time);
+> 164 |       setTime(0);
+      |       ^^^^^^^ Avoid calling setState() directly within an effect
+  165 |     }
+  166 |     return () => {
+  167 |       if (interval) clearInterval(interval);  react-hooks/set-state-in-effect
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\ui\banner.tsx
+  55:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\ui\banner.tsx:55:9
+  53 |       const isClosed = localStorage.getItem(globalKey) === "true";
+  54 |       if (isClosed) {
+> 55 |         setOpen(false);
+     |         ^^^^^^^ Avoid calling setState() directly within an effect
+  56 |       }
+  57 |     }
+  58 |   }, [globalKey]);  react-hooks/set-state-in-effect
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\ui\features-section.tsx
+  6:10  warning  'CanvasRevealEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\ui\hero.tsx
+   46:10  warning  'titleNumber' is assigned a value but never used                                                                    @typescript-eslint/no-unused-vars
+  155:6   warning  React Hook useEffect has a missing dependency: 'aiTitles.length'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\components\ui\sidebar-component.tsx
+    9:3    warning  'Folder' is defined but never used                                                                                             @typescript-eslint/no-unused-vars
+   10:15   warning  'CalendarIcon' is defined but never used                                                                                       @typescript-eslint/no-unused-vars
+   13:3    warning  'DocumentAdd' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+   18:3    warning  'Filter' is defined but never used                                                                                             @typescript-eslint/no-unused-vars
+   20:3    warning  'InProgress' is defined but never used                                                                                         @typescript-eslint/no-unused-vars
+   21:3    warning  'CheckmarkOutline' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+   22:3    warning  'Flag' is defined but never used                                                                                               @typescript-eslint/no-unused-vars
+   27:3    warning  'Group' is defined but never used                                                                                              @typescript-eslint/no-unused-vars
+   31:3    warning  'CloudUpload' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+   39:10   warning  'createClient' is defined but never used                                                                                       @typescript-eslint/no-unused-vars
+   43:7    warning  'svgPaths' is assigned a value but never used                                                                                  @typescript-eslint/no-unused-vars
+  114:41   error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  204:59   error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  353:9    warning  'isAdmin' is assigned a value but never used                                                                                   @typescript-eslint/no-unused-vars
+  450:101  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  450:128  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  450:138  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  683:36   warning  'isLoading' is assigned a value but never used                                                                                 @typescript-eslint/no-unused-vars
+  690:6    warning  React Hook useEffect has missing dependencies: 'fetchUserData' and 'user'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\jd328\Documents\workVIP\VipFlow\src\lib\supabase\middleware.ts
+  18:48  warning  'options' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 77 problems (29 errors, 48 warnings)
+
+ ELIFECYCLE  Command failed with exit code 1.

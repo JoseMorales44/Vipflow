@@ -144,7 +144,8 @@ export const SignInPage = ({ className }: SignInPageProps) => {
   const supabase = createClient();
 
   useEffect(() => {
-    setMounted(true);
+    const handle = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(handle);
   }, []);
 
   useEffect(() => {
@@ -210,9 +211,10 @@ export const SignInPage = ({ className }: SignInPageProps) => {
 
   useEffect(() => {
     if (step === "code") {
-      setTimeout(() => {
+      const id = setTimeout(() => {
         codeInputRefs.current[0]?.focus();
       }, 500);
+      return () => clearTimeout(id);
     }
   }, [step]);
 

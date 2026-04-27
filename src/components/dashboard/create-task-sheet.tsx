@@ -2,21 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  X, 
-  Calendar, 
-  Flag, 
-  Tag, 
-  UserPlus, 
+import {
+  X,
+  Calendar,
+  UserPlus,
   Maximize2,
-  ChevronDown,
   Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "motion/react";
-import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+// import { Tables } from "@/types/database";
 
 interface CreateTaskSheetProps {
   isOpen: boolean;
@@ -28,9 +25,9 @@ export function CreateTaskSheet({ isOpen, onClose }: CreateTaskSheetProps) {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
   const [isLoading, setIsLoading] = useState(false);
-  const [spaces, setSpaces] = useState<any[]>([]);
+  const [spaces, setSpaces] = useState<{ id: string; name: string }[]>([]);
   const [selectedSpaceId, setSelectedSpaceId] = useState<string>("");
-  
+
   const router = useRouter();
   const supabase = createClient();
 
@@ -46,7 +43,7 @@ export function CreateTaskSheet({ isOpen, onClose }: CreateTaskSheetProps) {
       }
       loadSpaces();
     }
-  }, [isOpen]);
+  }, [isOpen, supabase]);
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,9 +82,10 @@ export function CreateTaskSheet({ isOpen, onClose }: CreateTaskSheetProps) {
       setDescription("");
       onClose();
       router.refresh();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating task:", error);
-      alert(`Error al crear tarea: ${error.message}`);
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      alert(`Error al crear tarea: ${message}`);
     } finally {
       setIsLoading(false);
     }
@@ -143,9 +141,9 @@ export function CreateTaskSheet({ isOpen, onClose }: CreateTaskSheetProps) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 border-y border-white/5 py-6">
-                   <div className="space-y-2">
+                  <div className="space-y-2">
                     <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Space / Proyecto</Label>
-                    <select 
+                    <select
                       value={selectedSpaceId}
                       onChange={(e) => setSelectedSpaceId(e.target.value)}
                       className="w-full bg-white/5 border border-white/5 rounded-md p-2 text-sm text-zinc-300 focus:outline-none focus:border-[#51DD7D]/50"
@@ -155,7 +153,7 @@ export function CreateTaskSheet({ isOpen, onClose }: CreateTaskSheetProps) {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Prioridad</Label>
-                    <select 
+                    <select
                       value={priority}
                       onChange={(e) => setPriority(e.target.value)}
                       className="w-full bg-white/5 border border-white/5 rounded-md p-2 text-sm text-zinc-300 focus:outline-none focus:border-[#51DD7D]/50"
@@ -188,7 +186,7 @@ export function CreateTaskSheet({ isOpen, onClose }: CreateTaskSheetProps) {
                   </div>
                   <div className="flex gap-3">
                     <Button type="button" variant="ghost" onClick={onClose} className="text-zinc-400 hover:text-white">Cancelar</Button>
-                    <Button 
+                    <Button
                       type="submit"
                       disabled={isLoading}
                       className="bg-[#51DD7D] text-black hover:bg-[#51DD7D]/90 px-8 font-bold min-w-[120px]"

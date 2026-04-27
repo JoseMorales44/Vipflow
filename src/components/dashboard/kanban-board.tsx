@@ -276,7 +276,7 @@ const TaskCard = ({
         layout
         layoutId={id}
         draggable="true"
-        onDragStart={(e) => handleDragStart(e as any, { title, id, column, description, priority, assignee, tags, dueDate })}
+        onDragStartCapture={(e) => handleDragStart(e, { title, id, column, description, priority, assignee, tags, dueDate })}
         className="cursor-grab active:cursor-grabbing mb-2"
       >
         <Card className="hover:shadow-md transition-shadow bg-neutral-900 border-white/5 hover:border-primary/30 group">

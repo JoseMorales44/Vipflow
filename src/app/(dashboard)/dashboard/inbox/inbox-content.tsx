@@ -12,11 +12,16 @@ import { motion } from "motion/react";
 import { createClient } from "@/lib/supabase/client";
 import { CreateTaskSheet } from "@/components/dashboard/create-task-sheet";
 import { TaskDetailSheet } from "@/components/dashboard/task-detail-sheet";
+import { Tables } from "@/types/database";
+
+type TaskWithSpace = Tables<'tasks'> & {
+  spaces: { name: string } | null;
+};
 
 export function InboxContent() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<TaskWithSpace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();
 
@@ -27,11 +32,11 @@ export function InboxContent() {
         .select(`*, spaces(name)`)
         .order('created_at', { ascending: false });
 
-      setTasks(data || []);
+      setTasks((data as unknown as TaskWithSpace[]) || []);
       setIsLoading(false);
     }
     fetchTasks();
-  }, []);
+  }, [supabase]);
 
   return (
     <div className="flex flex-col h-full bg-[#0a0a0c]">
@@ -93,7 +98,9 @@ export function InboxContent() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                onClick={() => setSelectedTaskId(task.id)}
+                onClick={() => {
+                  setSelectedTaskId(task.id)
+                }}
                 className="group flex items-center gap-4 bg-white/[0.03] border border-white/5 p-4 rounded-xl hover:border-white/10 hover:bg-white/[0.05] transition-all cursor-pointer"
               >
                 <div className="h-6 w-6 rounded-full border-2 border-zinc-700 flex items-center justify-center group-hover:border-[#51DD7D] transition-colors">

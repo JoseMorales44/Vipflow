@@ -9,7 +9,6 @@ import {
   Settings, 
   Users, 
   Plus, 
-  Hash,
   ChevronDown,
   Bell,
   Search
@@ -17,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { Tables } from "@/types/database";
 
 const mainNav = [
   { name: "Inicio", href: "/dashboard", icon: LayoutDashboard },
@@ -26,8 +26,8 @@ const mainNav = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [spaces, setSpaces] = useState<any[]>([]);
-  const [org, setOrg] = useState<any>(null);
+  const [spaces, setSpaces] = useState<Tables<'spaces'>[]>([]);
+  const [org, setOrg] = useState<Tables<'organizations'> | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export function Sidebar() {
       }
     }
     loadSidebarData();
-  }, []);
+  }, [supabase]);
 
   return (
     <aside className="flex h-screen w-[260px] flex-col border-r border-white/[0.05] bg-black text-zinc-400">

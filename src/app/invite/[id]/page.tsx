@@ -5,21 +5,19 @@ import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { 
   Building, 
-  UserFollow, 
-  CheckmarkFilled,
   WarningAlt,
   Rocket
 } from "@carbon/icons-react";
+import { Tables } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function InvitePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id: paramId } = React.use(params); // Use the promise if we want, or keep useParams.
+export default function InvitePage() {
   const { id } = useParams();
   const router = useRouter();
-  const [invitation, setInvitation] = useState<any>(null);
+  const [invitation, setInvitation] = useState<Tables<'invitations'> & { organizations: Tables<'organizations'> } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
@@ -33,26 +31,26 @@ export default function InvitePage({ params }: { params: Promise<{ id: string }>
       const { data, error: invError } = await supabase
         .from('invitations')
         .select('*, organizations(*)')
-        .eq('id', id)
+        .eq('id', id as string)
         .eq('status', 'pending')
         .single();
       
       if (invError || !data) {
         setError("Esta invitación no es válida o ya ha expirado.");
       } else {
-        setInvitation(data);
+        setInvitation(data as Tables<'invitations'> & { organizations: Tables<'organizations'> });
         setRole(data.role); // Default to what the admin selected
       }
       setLoading(false);
     }
     loadInvitation();
-  }, [id]);
+  }, [id, supabase]);
 
   const handleJoin = async () => {
     setJoining(true);
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (!user || !invitation) {
       // If not logged in, we should redirect to login first with this invite ID in state
       // For now, assume they need to be logged in (standard flow)
       router.push(`/login?returnTo=/invite/${id}`);
@@ -126,7 +124,7 @@ export default function InvitePage({ params }: { params: Promise<{ id: string }>
           </div>
           <div>
             <CardTitle className="text-2xl font-black uppercase tracking-tighter italic text-white">
-              Te han invitado a {invitation.organizations.name}
+              Te han invitado a {invitation?.organizations.name}
             </CardTitle>
             <CardDescription className="uppercase text-[10px] font-bold tracking-[0.2em] text-neutral-500 mt-2">
               Completa tu perfil para unirte al equipo

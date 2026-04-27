@@ -1,21 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-interface Message {
-  id: string;
-  content: string;
-  sender_id: string;
-  created_at: string;
+import { Tables } from "@/types/database";
+
+type Message = Tables<'messages'> & {
   profiles: {
-    full_name: string;
-    avatar_url: string;
-  };
-}
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+};
 
 interface SpaceChatProps {
   spaceId: string;
@@ -27,9 +25,25 @@ export function SpaceChat({ spaceId }: SpaceChatProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
 
+  const loadMessages = useCallback(async () => {
+    const { data } = await supabase
+      .from('messages')
+      .select('*, profiles:sender_id(full_name, avatar_url)')
+      .eq('space_id', spaceId)
+      .order('created_at', { ascending: true })
+      .limit(50);
+    
+    if (data) setMessages(data as Message[]);
+  }, [supabase, spaceId]);
+
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id || null));
-    loadMessages();
+    async function init() {
+      const { data } = await supabase.auth.getUser();
+      setUserId(data.user?.id || null);
+      await loadMessages();
+    }
+    
+    init();
 
     const channel = supabase
       .channel(`space:${spaceId}`)
@@ -61,31 +75,14 @@ export function SpaceChat({ spaceId }: SpaceChatProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [spaceId]);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const loadMessages = async () => {
-    const { data } = await supabase
-      .from('messages')
-      .select('*, profiles:sender_id(full_name, avatar_url)')
-      .eq('space_id', spaceId)
-      .order('created_at', { ascending: true })
-      .limit(50);
-    
-    if (data) setMessages(data as any[]);
-  };
+  }, [spaceId, loadMessages, supabase]);
 
   const handleSendMessage = async (content: string) => {
     if (!content.trim() || !userId) return;
 
     const { error } = await supabase.from('messages').insert({
       space_id: spaceId,
-      sender_id: userId,
+      user_id: userId,
       content: content.trim()
     });
 
@@ -103,7 +100,7 @@ export function SpaceChat({ spaceId }: SpaceChatProps) {
       >
         <AnimatePresence initial={false}>
           {messages.map((msg) => {
-            const isMe = msg.sender_id === userId;
+            const isMe = msg.user_id === userId;
             return (
               <motion.div
                 key={msg.id}
@@ -126,7 +123,7 @@ export function SpaceChat({ spaceId }: SpaceChatProps) {
                       {msg.profiles?.full_name || 'Miembro'}
                     </span>
                     <span className="text-[9px] text-zinc-800 font-bold">
-                      {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.created_at ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                   <div className={cn(

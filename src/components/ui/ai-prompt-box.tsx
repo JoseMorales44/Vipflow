@@ -140,40 +140,43 @@ interface VoiceRecorderProps {
   isRecording: boolean;
   onStartRecording: () => void;
   onStopRecording: (duration: number) => void;
-  visualizerBars?: number;
 }
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   isRecording,
   onStartRecording,
   onStopRecording,
-  visualizerBars = 32,
 }) => {
   const [time, setTime] = React.useState(0);
   const [barHeights, setBarHeights] = React.useState<number[]>([]);
-  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Removed useEffect for barHeights to avoid cascading render warning
 
   React.useEffect(() => {
-    if (isRecording) {
-      setBarHeights(Array.from({ length: visualizerBars }, () => Math.random() * 85 + 15));
-    }
-  }, [isRecording, visualizerBars]);
-
-  React.useEffect(() => {
+    let interval: NodeJS.Timeout;
     if (isRecording) {
       onStartRecording();
-      timerRef.current = setInterval(() => setTime((t) => t + 1), 1000);
+      const handle = requestAnimationFrame(() => {
+        setBarHeights(Array.from({ length: 32 }, () => Math.random() * 80 + 20));
+      });
+      interval = setInterval(() => {
+        setTime((t) => t + 1);
+        setBarHeights(Array.from({ length: 32 }, () => Math.random() * 80 + 20));
+      }, 1000);
+      return () => {
+        if (interval) clearInterval(interval);
+        cancelAnimationFrame(handle);
+      };
     } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
       onStopRecording(time);
-      setTime(0);
+      requestAnimationFrame(() => {
+        setTime(0);
+        setBarHeights([]);
+      });
     }
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (interval) clearInterval(interval);
     };
-  }, [isRecording, time, onStartRecording, onStopRecording]);
+  }, [isRecording, onStartRecording, onStopRecording, time]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -456,7 +459,7 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
 
   const isImageFile = (file: File) => file.type.startsWith("image/");
 
-  const processFile = (file: File) => {
+  const processFile = React.useCallback((file: File) => {
     if (!isImageFile(file)) {
       console.log("Only image files are allowed");
       return;
@@ -469,7 +472,7 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
     const reader = new FileReader();
     reader.onload = (e) => setFilePreviews({ [file.name]: e.target?.result as string });
     reader.readAsDataURL(file);
-  };
+  }, []);
 
   const handleDragOver = React.useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -487,7 +490,7 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
     const files = Array.from(e.dataTransfer.files);
     const imageFiles = files.filter((file) => isImageFile(file));
     if (imageFiles.length > 0) processFile(imageFiles[0]);
-  }, []);
+  }, [processFile]);
 
   const handleRemoveFile = (index: number) => {
     const fileToRemove = files[index];
@@ -510,7 +513,7 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
         }
       }
     }
-  }, []);
+  }, [processFile]);
 
   React.useEffect(() => {
     document.addEventListener("paste", handlePaste);
@@ -568,9 +571,11 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
                     className="w-16 h-16 rounded-xl overflow-hidden cursor-pointer transition-all duration-300"
                     onClick={() => openImageModal(filePreviews[file.name])}
                   >
-                    <img
+                    <Image
                       src={filePreviews[file.name]}
                       alt={file.name}
+                      width={64}
+                      height={64}
                       className="h-full w-full object-cover"
                     />
                     <button
@@ -778,7 +783,9 @@ export const PromptInputBox = React.forwardRef((props: PromptInputBoxProps, ref:
               onClick={() => {
                 if (isRecording) setIsRecording(false);
                 else if (hasContent) handleSubmit();
-                else setIsRecording(true);
+                else {
+                  setIsRecording(true);
+                }
               }}
               disabled={isLoading && !hasContent}
             >

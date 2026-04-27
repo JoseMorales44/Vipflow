@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { MoveRight } from "lucide-react";
 import Image from "next/image";
@@ -43,12 +43,10 @@ export const PremiumHero = () => {
   const noiseRef = useRef<HTMLCanvasElement>(null);
   const beamsRef = useRef<Beam[]>([]);
   const animationFrameRef = useRef<number>(0);
-  const [titleNumber, setTitleNumber] = useState(0);
 
   const LAYERS = 3;
   const BEAMS_PER_LAYER = 12; // Aumentado para pantallas grandes
 
-  const aiTitles = ["TUS Proyectos", "TUS Clientes", "TU Equipo", "TU Agencia"];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -147,12 +145,6 @@ export const PremiumHero = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTitleNumber((prev) => (prev + 1) % aiTitles.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-black">

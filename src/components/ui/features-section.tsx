@@ -3,7 +3,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { MessageSquare, Kanban, FolderUp, Users, Layout } from "lucide-react"
 import { motion } from "framer-motion";
-import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect";
 
 export function FeaturesSection() {
     return (

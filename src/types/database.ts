@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -118,6 +118,54 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      invitations: {
+        Row: {
+          id: string
+          org_id: string
+          email: string | null
+          role: string
+          status: string
+          invited_by: string
+          expires_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          org_id: string
+          email?: string | null
+          role?: string
+          status?: string
+          invited_by: string
+          expires_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          org_id?: string
+          email?: string | null
+          role?: string
+          status?: string
+          invited_by?: string
+          expires_at?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
         ]
       }
       kanban_columns: {

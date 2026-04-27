@@ -33,10 +33,11 @@ export function AuthForm({ view = "login" }: { view?: "login" | "register" }) {
         type: 'success', 
         text: '¡Enlace enviado! Revisa tu bandeja de entrada.' 
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Ocurrió un error al intentar enviar el enlace.';
       setMessage({ 
         type: 'error', 
-        text: error.message || 'Ocurrió un error al intentar enviar el enlace.' 
+        text: message
       });
     } finally {
       setIsLoading(false);
@@ -54,10 +55,11 @@ export function AuthForm({ view = "login" }: { view?: "login" | "register" }) {
         },
       });
       if (error) throw error;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
       setMessage({ 
         type: 'error', 
-        text: `Error con ${provider}: ${error.message}` 
+        text: `Error con ${provider}: ${message}` 
       });
       setIsLoading(false);
     }

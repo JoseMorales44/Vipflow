@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import {
   CheckCircle2,
   Circle,
-  CircleAlert,
   CircleDotDashed,
-  CircleX,
 } from "lucide-react";
 import { motion, AnimatePresence, LayoutGroup, type Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
