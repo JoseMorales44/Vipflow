@@ -17,13 +17,16 @@ import { AgentPlan } from "@/components/ui/agent-plan";
 import { Tables } from "@/types/database";
 
 import { Column } from "@/types/dashboard";
+import { SpaceMember } from "./page";
+import Image from "next/image";
 
 interface SpaceContentProps {
   space: Tables<'spaces'>;
   columns: Column[];
+  members: SpaceMember[];
 }
 
-export function SpaceContent({ space, columns }: SpaceContentProps) {
+export function SpaceContent({ space, columns, members }: SpaceContentProps) {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'board' | 'chat' | 'roadmap'>('board');
 
@@ -43,11 +46,22 @@ export function SpaceContent({ space, columns }: SpaceContentProps) {
 
         <div className="flex items-center gap-6">
           <div className="flex -space-x-3 mr-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-8 w-8 rounded-full border-2 border-black bg-zinc-900 flex items-center justify-center text-[10px] font-bold text-zinc-500">
-                U{i}
+            {members.slice(0, 4).map((m) => (
+              <div
+                key={m.id}
+                title={m.profiles?.full_name || ''}
+                className="h-8 w-8 rounded-full border-2 border-black bg-zinc-900 flex items-center justify-center text-[10px] font-bold text-zinc-400 overflow-hidden"
+              >
+                {m.profiles?.avatar_url ? (
+                  <Image src={m.profiles.avatar_url} alt={m.profiles.full_name} width={32} height={32} className="object-cover" />
+                ) : (
+                  <span>{m.profiles?.full_name?.[0]?.toUpperCase() || '?'}</span>
+                )}
               </div>
             ))}
+            {members.length === 0 && (
+              <div className="h-8 w-8 rounded-full border-2 border-black bg-zinc-900 flex items-center justify-center text-[10px] font-bold text-zinc-600">+</div>
+            )}
             <div className="h-8 w-8 rounded-full border-2 border-black bg-white flex items-center justify-center text-[10px] font-bold text-black cursor-pointer hover:scale-110 transition-transform">
               <Plus className="h-3 w-3" />
             </div>
@@ -109,7 +123,7 @@ export function SpaceContent({ space, columns }: SpaceContentProps) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className={cn("flex-1", activeTab === 'board' ? "overflow-x-auto overflow-y-hidden" : "overflow-hidden")}>
         {activeTab === 'board' ? (
           /* Kanban Board */
           <div className="flex gap-8 h-full items-start p-10 overflow-x-auto custom-scrollbar min-w-max bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.02)_0%,_transparent_100%)]">
