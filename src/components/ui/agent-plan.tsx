@@ -220,7 +220,7 @@ export function AgentPlan({ tasksData = initialTasks }: { tasksData?: Task[] }) 
     exit: { opacity: 0, y: prefersReducedMotion ? 0 : -5, transition: { duration: 0.15 } }
   };
 
-  const subtaskListVariants = {
+  const subtaskListVariants: Variants = {
     hidden: { opacity: 0, height: 0, overflow: "hidden" },
     visible: { 
       height: "auto", 
@@ -256,7 +256,7 @@ export function AgentPlan({ tasksData = initialTasks }: { tasksData?: Task[] }) 
     exit: { opacity: 0, x: prefersReducedMotion ? 0 : -10, transition: { duration: 0.15 } }
   };
 
-  const subtaskDetailsVariants = {
+  const subtaskDetailsVariants: Variants = {
     hidden: { opacity: 0, height: 0, overflow: "hidden" },
     visible: { 
       opacity: 1, 
