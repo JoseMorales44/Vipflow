@@ -228,28 +228,26 @@ const ShaderMaterial = ({
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const timestamp = clock.getElapsedTime();
-    const material: any = ref.current.material;
-    material.uniforms.u_time.value = timestamp;
+    const material = ref.current.material as THREE.ShaderMaterial;
+    if (material.uniforms.u_time) {
+      material.uniforms.u_time.value = timestamp;
+    }
   });
 
-  const getUniforms = () => {
-    const preparedUniforms: any = {};
+  const getUniforms = React.useCallback(() => {
+    const preparedUniforms: { [key: string]: THREE.IUniform } = {};
     for (const uniformName in uniforms) {
-      const uniform: any = uniforms[uniformName];
+      const uniform = uniforms[uniformName];
       switch (uniform.type) {
         case "uniform1f":
-          preparedUniforms[uniformName] = { value: uniform.value };
-          break;
         case "uniform1i":
+        case "uniform1fv":
           preparedUniforms[uniformName] = { value: uniform.value };
           break;
         case "uniform3f":
           preparedUniforms[uniformName] = {
             value: new THREE.Vector3().fromArray(uniform.value as number[]),
           };
-          break;
-        case "uniform1fv":
-          preparedUniforms[uniformName] = { value: uniform.value };
           break;
         case "uniform3fv":
           preparedUniforms[uniformName] = {
@@ -270,7 +268,7 @@ const ShaderMaterial = ({
       value: new THREE.Vector2(size.width * 2, size.height * 2),
     };
     return preparedUniforms;
-  };
+  }, [size.width, size.height, uniforms]);
 
   const material = useMemo(() => {
     return new THREE.ShaderMaterial({
@@ -294,10 +292,10 @@ const ShaderMaterial = ({
       blendSrc: THREE.SrcAlphaFactor,
       blendDst: THREE.OneFactor,
     });
-  }, [size.width, size.height, source]);
+  }, [source, getUniforms]);
 
   return (
-    <mesh ref={ref as any}>
+    <mesh ref={ref}>
       <planeGeometry args={[2, 2]} />
       <primitive object={material} attach="material" />
     </mesh>

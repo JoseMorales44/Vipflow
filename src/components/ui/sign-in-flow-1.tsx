@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect";
 import { createClient } from "@/lib/supabase/client";
@@ -37,7 +38,9 @@ function MiniNavbar() {
     }
 
     if (isOpen) {
-      setHeaderShapeClass('rounded-xl');
+      // Small delay to avoid synchronous update in effect warning
+      const id = setTimeout(() => setHeaderShapeClass('rounded-xl'), 0);
+      return () => clearTimeout(id);
     } else {
       shapeTimeoutRef.current = setTimeout(() => {
         setHeaderShapeClass('rounded-full');
@@ -68,7 +71,7 @@ function MiniNavbar() {
 
       <div className="flex items-center justify-between w-full gap-x-20">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/images/logo-VIP.png" alt="VIP" className="h-5 w-auto" />
+          <Image src="/images/logo-VIP.png" alt="VIP" width={40} height={20} className="h-5 w-auto" />
         </Link>
 
         <nav className="hidden sm:flex items-center space-x-6 text-sm">
@@ -141,7 +144,6 @@ export const SignInPage = ({ className }: SignInPageProps) => {
   const supabase = createClient();
 
   useEffect(() => {
-    console.log("SignInPage mounted");
     setMounted(true);
   }, []);
 
@@ -166,8 +168,9 @@ export const SignInPage = ({ className }: SignInPageProps) => {
 
       if (error) throw error;
       setStep("code");
-    } catch (err: any) {
-      setError(err.message || "Error al enviar el código");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Error al enviar el código";
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -194,8 +197,9 @@ export const SignInPage = ({ className }: SignInPageProps) => {
       setTimeout(() => {
         setStep("success");
       }, 2000);
-    } catch (err: any) {
-      setError(err.message || "Código inválido");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Código inválido";
+      setError(message);
       // Resetear código si falla
       setCode(["", "", "", "", "", ""]);
       codeInputRefs.current[0]?.focus();

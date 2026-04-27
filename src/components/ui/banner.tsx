@@ -49,7 +49,12 @@ export function Banner({
   const globalKey = id ? `nd-banner-${id}` : null;
 
   useEffect(() => {
-    if (globalKey) setOpen(localStorage.getItem(globalKey) !== "true");
+    if (globalKey) {
+      const isClosed = localStorage.getItem(globalKey) === "true";
+      if (isClosed) {
+        setOpen(false);
+      }
+    }
   }, [globalKey]);
 
   if (!open) return null;

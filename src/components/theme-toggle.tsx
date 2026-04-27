@@ -19,7 +19,8 @@ export function ThemeToggle() {
 
   // Evitar error de hidratación: el componente solo muestra el estado del tema en el cliente
   React.useEffect(() => {
-    setMounted(true);
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
   }, []);
 
   if (!mounted) {

@@ -5,6 +5,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ArrowUp, Paperclip, Square, X, StopCircle, Mic, Globe, BrainCog, FolderCode } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 // Utility function for className merging
 const cn = (...classes: (string | undefined | null | false)[]) => classes.filter(Boolean).join(" ");
@@ -148,7 +149,14 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   visualizerBars = 32,
 }) => {
   const [time, setTime] = React.useState(0);
+  const [barHeights, setBarHeights] = React.useState<number[]>([]);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    if (isRecording) {
+      setBarHeights(Array.from({ length: visualizerBars }, () => Math.random() * 85 + 15));
+    }
+  }, [isRecording, visualizerBars]);
 
   React.useEffect(() => {
     if (isRecording) {
@@ -185,14 +193,14 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         <span className="font-mono text-sm text-white/80">{formatTime(time)}</span>
       </div>
       <div className="w-full h-10 flex items-center justify-center gap-0.5 px-4">
-        {[...Array(visualizerBars)].map((_, i) => (
+        {barHeights.map((height, i) => (
           <div
             key={i}
             className="w-0.5 rounded-full bg-white/50 animate-pulse"
             style={{
-              height: `${Math.max(15, Math.random() * 100)}%`,
+              height: `${height}%`,
               animationDelay: `${i * 0.05}s`,
-              animationDuration: `${0.5 + Math.random() * 0.5}s`,
+              animationDuration: `${0.5 + (height / 100) * 0.5}s`,
             }}
           />
         ))}
@@ -219,11 +227,15 @@ const ImageViewDialog: React.FC<ImageViewDialogProps> = ({ imageUrl, onClose }) 
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="relative bg-[#1F2023] rounded-2xl overflow-hidden shadow-2xl"
         >
-          <img
-            src={imageUrl}
-            alt="Full preview"
-            className="w-full max-h-[80vh] object-contain rounded-2xl"
-          />
+          <div className="relative w-full h-full min-h-[300px] max-h-[80vh]">
+            <Image
+              src={imageUrl}
+              alt="Full preview"
+              fill
+              className="object-contain rounded-2xl"
+              unoptimized // Since it's a blob/data URL usually
+            />
+          </div>
         </motion.div>
       </DialogContent>
     </Dialog>
@@ -365,7 +377,7 @@ const PromptInputTextarea: React.FC<PromptInputTextareaProps & React.ComponentPr
   );
 };
 
-interface PromptInputActionsProps extends React.HTMLAttributes<HTMLDivElement> {}
+type PromptInputActionsProps = React.HTMLAttributes<HTMLDivElement>;
 const PromptInputActions: React.FC<PromptInputActionsProps> = ({ children, className, ...props }) => (
   <div className={cn("flex items-center gap-2", className)} {...props}>
     {children}
