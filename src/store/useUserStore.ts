@@ -1,19 +1,24 @@
 import { create } from 'zustand';
 import { createClient } from '@/lib/supabase/client';
+import { Tables } from '@/types/database';
+
+type Profile = Tables<'profiles'>;
+type Organization = Tables<'organizations'>;
+type Space = Tables<'spaces'>;
 
 interface UserState {
-  user: any | null;
-  org: any | null;
+  user: Profile | null;
+  org: Organization | null;
   role: string | null;
-  spaces: any[];
+  spaces: Space[];
   isLoading: boolean;
   error: string | null;
   
   // Actions
-  setUser: (user: any) => void;
-  setOrg: (org: any) => void;
-  setRole: (role: string) => void;
-  setSpaces: (spaces: any[]) => void;
+  setUser: (user: Profile | null) => void;
+  setOrg: (org: Organization | null) => void;
+  setRole: (role: string | null) => void;
+  setSpaces: (spaces: Space[]) => void;
   fetchUserData: () => Promise<void>;
 }
 
@@ -73,7 +78,7 @@ export const useUserStore = create<UserState>((set) => ({
       }
 
       // Fetch spaces
-      let spacesData: any[] = [];
+      let spacesData: Space[] = [];
       if (currentOrg) {
         let spacesQuery = supabase
           .from('spaces')
@@ -97,14 +102,15 @@ export const useUserStore = create<UserState>((set) => ({
       }
 
       set({ 
-        user: profile, 
-        org: currentOrg, 
+        user: profile as Profile, 
+        org: currentOrg as Organization, 
         role: userRole, 
         spaces: spacesData, 
         isLoading: false 
       });
-    } catch (err: any) {
-      set({ error: err.message, isLoading: false });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      set({ error: message, isLoading: false });
     }
   },
 }));
