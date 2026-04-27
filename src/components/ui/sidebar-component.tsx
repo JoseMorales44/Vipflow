@@ -94,39 +94,19 @@ function AvatarCircle({ user }: { user: Tables<'profiles'> | null }) {
 
 /* ------------------------------ Search Input ----------------------------- */
 
-function SearchContainer({ isCollapsed = false }: { isCollapsed?: boolean }) {
+function SearchContainer() {
   const [searchValue, setSearchValue] = useState("");
 
   return (
-    <div
-      className={`relative shrink-0 transition-all duration-500 px-2 ${
-        isCollapsed ? "w-full flex justify-center" : "w-full"
-      }`}
-      style={{ transitionTimingFunction: softSpringEasing }}
-    >
-      <div
-        className={`bg-white/[0.03] h-10 relative rounded-lg flex items-center transition-all duration-500 border border-white/[0.05] ${
-          isCollapsed ? "w-10 min-w-10 justify-center" : "w-full"
-        }`}
-        style={{ transitionTimingFunction: softSpringEasing }}
-      >
-        <div
-          className={`flex items-center justify-center shrink-0 transition-all duration-500 ${
-            isCollapsed ? "p-1" : "px-1"
-          }`}
-          style={{ transitionTimingFunction: softSpringEasing }}
-        >
+    <div className="relative shrink-0 w-full px-2">
+      <div className="bg-white/[0.03] h-10 relative rounded-lg flex items-center border border-white/[0.05] w-full">
+        <div className="flex items-center justify-center shrink-0 px-1">
           <div className="size-8 flex items-center justify-center">
             <SearchIcon size={16} className="text-neutral-500" />
           </div>
         </div>
 
-        <div
-          className={`flex-1 relative transition-opacity duration-500 overflow-hidden ${
-            isCollapsed ? "opacity-0 w-0" : "opacity-100"
-          }`}
-          style={{ transitionTimingFunction: softSpringEasing }}
-        >
+        <div className="flex-1 relative overflow-hidden">
           <div className="flex flex-col justify-center size-full">
             <div className="flex flex-col gap-2 items-start justify-center pr-2 py-1 w-full">
               <input
@@ -135,7 +115,7 @@ function SearchContainer({ isCollapsed = false }: { isCollapsed?: boolean }) {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
                 className="w-full bg-transparent border-none outline-none font-['Lexend:Regular',_sans-serif] text-[13px] text-neutral-50 placeholder:text-neutral-500 leading-[20px]"
-                tabIndex={isCollapsed ? -1 : 0}
+                tabIndex={0}
               />
             </div>
           </div>
@@ -355,53 +335,14 @@ function IconNavigation({
 
 /* ------------------------------ Right Sidebar ----------------------------- */
 
-function SectionTitle({
-  title,
-  onToggleCollapse,
-  isCollapsed,
-}: {
-  title: string;
-  onToggleCollapse: () => void;
-  isCollapsed: boolean;
-}) {
-  if (isCollapsed) {
-    return (
-      <div className="w-full flex justify-center transition-all duration-500" style={{ transitionTimingFunction: softSpringEasing }}>
-        <button
-          type="button"
-          onClick={onToggleCollapse}
-          className="flex items-center justify-center rounded-lg size-10 min-w-10 transition-all duration-500 hover:bg-neutral-800 text-neutral-400 hover:text-neutral-300"
-          style={{ transitionTimingFunction: softSpringEasing }}
-          aria-label="Expand sidebar"
-        >
-          <span className="inline-block rotate-180">
-            <ChevronDownIcon size={16} />
-          </span>
-        </button>
-      </div>
-    );
-  }
-
+function SectionTitle({ title }: { title: string }) {
   return (
-    <div className="w-full overflow-hidden transition-all duration-500 px-2" style={{ transitionTimingFunction: softSpringEasing }}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center h-10">
-          <div className="px-2 py-1">
-            <div className="font-['Lexend:SemiBold',_sans-serif] text-[16px] text-neutral-50 leading-[24px] tracking-tight">
-              {title}
-            </div>
+    <div className="w-full overflow-hidden px-2">
+      <div className="flex items-center h-10">
+        <div className="px-2 py-1">
+          <div className="font-['Lexend:SemiBold',_sans-serif] text-[16px] text-neutral-50 leading-[24px] tracking-tight">
+            {title}
           </div>
-        </div>
-        <div className="pr-1">
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            className="flex items-center justify-center rounded-lg size-8 min-w-8 transition-all duration-500 hover:bg-neutral-800 text-neutral-500 hover:text-neutral-300"
-            style={{ transitionTimingFunction: softSpringEasing }}
-            aria-label="Collapse sidebar"
-          >
-            <ChevronDownIcon size={14} className="-rotate-90" />
-          </button>
         </div>
       </div>
     </div>
@@ -410,10 +351,16 @@ function SectionTitle({
 
 function DetailSidebar({ activeSection, spaces, role, user, org }: { activeSection: string; spaces: Tables<'spaces'>[]; role: string; user: Tables<'profiles'> | null; org: Tables<'organizations'> | null }) {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const content = getSidebarContent(activeSection, spaces, role, pathname);
+
+  const ROLE_LABELS: Record<string, string> = {
+    owner: 'Propietario',
+    admin: 'Administrador',
+    worker: 'Colaborador',
+    client: 'Cliente',
+  };
 
   const toggleExpanded = (itemKey: string) => {
     setExpandedItems((prev) => {
@@ -424,64 +371,92 @@ function DetailSidebar({ activeSection, spaces, role, user, org }: { activeSecti
     });
   };
 
-  const toggleCollapse = () => setIsCollapsed((s) => !s);
-
   return (
-    <aside
-      className={`bg-black flex flex-col gap-4 items-start py-6 px-4 border-r border-white/[0.05] transition-all duration-500 h-full ${
-        isCollapsed ? "w-16 min-w-16 !px-0 justify-center" : "w-72"
-      }`}
-      style={{ transitionTimingFunction: softSpringEasing }}
-    >
-      {!isCollapsed && <BrandBadge orgName={org?.name || "Mi Agencia"} />}
+    <aside className="bg-black flex flex-col gap-3 items-start py-4 px-2 border-r border-white/[0.05] h-full w-56 md:w-64 shrink-0">
+      <BrandBadge orgName={org?.name || 'Mi Agencia'} />
+      <SectionTitle title={content.title} />
+      <SearchContainer />
 
-      <SectionTitle title={content.title} onToggleCollapse={toggleCollapse} isCollapsed={isCollapsed} />
-      <SearchContainer isCollapsed={isCollapsed} />
-
-      <div
-        className={`flex flex-col w-full overflow-y-auto transition-all duration-500 custom-scrollbar ${
-          isCollapsed ? "gap-2 items-center" : "gap-4 items-start"
-        }`}
-        style={{ transitionTimingFunction: softSpringEasing }}
-      >
+      <div className="flex flex-col w-full overflow-y-auto flex-1 gap-3 items-start custom-scrollbar">
         {content.sections.map((section, index) => (
           <MenuSection
             key={`${activeSection}-${index}`}
             section={section}
             expandedItems={expandedItems}
             onToggleExpanded={toggleExpanded}
-            isCollapsed={isCollapsed}
             onNavigate={(href) => router.push(href)}
           />
         ))}
-      </div>
 
-      {!isCollapsed && (
-        <div className="w-full mt-auto pt-4 border-t border-white/[0.05]">
-          <div className="flex items-center gap-3 px-2 py-2 group cursor-pointer hover:bg-white/[0.03] rounded-xl transition-colors">
-            <AvatarCircle user={user} />
-            <div className="flex flex-col overflow-hidden">
-                <span className="font-['Lexend:Regular',_sans-serif] text-[13px] text-neutral-50 truncate leading-tight">
-                    {user?.full_name || "Cargando..."}
-                </span>
-                <span className="text-[10px] text-neutral-500 truncate uppercase tracking-wider font-bold">
-                    {role || "Worker"}
-                </span>
+        {/* Canales / Spaces — always visible */}
+        {spaces.length > 0 && activeSection !== 'spaces' && (
+          <div className="flex flex-col w-full mt-1">
+            <div className="flex items-center justify-between h-8 px-4">
+              <div className="text-[10px] text-neutral-600 uppercase tracking-[0.2em] font-bold">Canales</div>
+              <button
+                onClick={() => router.push('/dashboard/spaces/new')}
+                className="text-neutral-600 hover:text-[#51DD7D] transition-colors"
+                title="Nuevo canal"
+              >
+                <AddLarge size={12} />
+              </button>
             </div>
+            {spaces.map(space => (
+              <div
+                key={space.id}
+                onClick={() => router.push(`/dashboard/spaces/${space.id}`)}
+                className={`flex items-center gap-2.5 h-9 px-4 rounded-lg cursor-pointer transition-colors ${
+                  pathname === `/dashboard/spaces/${space.id}`
+                    ? 'bg-white/[0.08] text-white'
+                    : 'text-neutral-500 hover:text-neutral-200 hover:bg-white/[0.03]'
+                }`}
+              >
+                <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: space.color || '#51DD7D' }} />
+                <span className="text-[13px] truncate">{space.name}</span>
+              </div>
+            ))}
             <button
-              type="button"
-              className="ml-auto size-8 rounded-md flex items-center justify-center hover:bg-neutral-800 text-neutral-500"
-              aria-label="More"
+              onClick={() => router.push('/dashboard/spaces/new')}
+              className="flex items-center gap-2.5 h-9 px-4 text-neutral-600 hover:text-[#51DD7D] hover:bg-white/[0.03] rounded-lg transition-colors w-full"
             >
-              <svg className="size-4" viewBox="0 0 16 16" fill="none">
-                <circle cx="4" cy="8" r="1" fill="currentColor" />
-                <circle cx="8" cy="8" r="1" fill="currentColor" />
-                <circle cx="12" cy="8" r="1" fill="currentColor" />
-              </svg>
+              <AddLarge size={12} />
+              <span className="text-[12px] font-bold uppercase tracking-widest">Nuevo Canal</span>
             </button>
           </div>
+        )}
+
+        {spaces.length === 0 && (
+          <div className="flex flex-col w-full mt-1">
+            <div className="flex items-center h-8 px-4">
+              <div className="text-[10px] text-neutral-600 uppercase tracking-[0.2em] font-bold">Canales</div>
+            </div>
+            <button
+              onClick={() => router.push('/dashboard/spaces/new')}
+              className="flex items-center gap-2.5 h-9 px-4 text-neutral-600 hover:text-[#51DD7D] hover:bg-white/[0.03] rounded-lg transition-colors w-full"
+            >
+              <AddLarge size={12} />
+              <span className="text-[12px] font-bold uppercase tracking-widest">Crear primer canal</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="w-full mt-auto pt-3 border-t border-white/[0.05]">
+        <div
+          onClick={() => router.push('/dashboard/settings')}
+          className="flex items-center gap-3 px-2 py-2 group cursor-pointer hover:bg-white/[0.03] rounded-xl transition-colors"
+        >
+          <AvatarCircle user={user} />
+          <div className="flex flex-col overflow-hidden flex-1 min-w-0">
+            <span className="font-['Lexend:Regular',_sans-serif] text-[13px] text-neutral-50 truncate leading-tight">
+              {user?.full_name || user?.email || 'Cargando...'}
+            </span>
+            <span className="text-[10px] text-neutral-500 truncate uppercase tracking-wider font-bold">
+              {ROLE_LABELS[role] || role}
+            </span>
+          </div>
         </div>
-      )}
+      </div>
     </aside>
   );
 }
@@ -493,13 +468,11 @@ function MenuItem({
   isExpanded,
   onToggle,
   onItemClick,
-  isCollapsed,
 }: {
   item: MenuItemT;
   isExpanded?: boolean;
   onToggle?: () => void;
   onItemClick?: () => void;
-  isCollapsed?: boolean;
 }) {
   const handleClick = () => {
     if (item.hasDropdown && onToggle) onToggle();
@@ -507,49 +480,23 @@ function MenuItem({
   };
 
   return (
-    <div
-      className={`relative shrink-0 transition-all duration-500 ${
-        isCollapsed ? "w-full flex justify-center" : "w-full"
-      }`}
-      style={{ transitionTimingFunction: softSpringEasing }}
-    >
+    <div className="relative shrink-0 w-full">
       <div
-        className={`rounded-xl cursor-pointer transition-all duration-500 flex items-center relative ${
+        className={`rounded-xl cursor-pointer transition-all duration-200 flex items-center relative w-full h-9 px-4 py-2 ${
           item.isActive ? "bg-white/[0.08] text-white" : "hover:bg-white/[0.03] text-neutral-500 hover:text-neutral-300"
-        } ${isCollapsed ? "w-10 min-w-10 h-10 justify-center" : "w-full h-10 px-4 py-2"}`}
-        style={{ transitionTimingFunction: softSpringEasing }}
+        }`}
         onClick={handleClick}
-        title={isCollapsed ? item.label : undefined}
       >
         <div className="flex items-center justify-center shrink-0">{item.icon}</div>
-
-        <div
-          className={`flex-1 relative transition-opacity duration-500 overflow-hidden ${
-            isCollapsed ? "opacity-0 w-0" : "opacity-100 ml-3"
-          }`}
-          style={{ transitionTimingFunction: softSpringEasing }}
-        >
-          <div className="font-['Lexend:Medium',_sans-serif] text-[13px] leading-[20px] truncate">
-            {item.label}
-          </div>
+        <div className="flex-1 overflow-hidden ml-3">
+          <div className="text-[13px] leading-[20px] truncate">{item.label}</div>
         </div>
-
         {item.hasDropdown && (
-          <div
-            className={`flex items-center justify-center shrink-0 transition-opacity duration-500 ${
-              isCollapsed ? "opacity-0 w-0" : "opacity-100 ml-2"
-            }`}
-            style={{ transitionTimingFunction: softSpringEasing }}
-          >
-            <ChevronDownIcon
-              size={14}
-              className="transition-transform duration-500"
-              style={{
-                transitionTimingFunction: softSpringEasing,
-                transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-              }}
-            />
-          </div>
+          <ChevronDownIcon
+            size={14}
+            className="transition-transform duration-300 ml-2 shrink-0"
+            style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+          />
         )}
       </div>
     </div>
@@ -577,27 +524,18 @@ function MenuSection({
   section,
   expandedItems,
   onToggleExpanded,
-  isCollapsed,
   onNavigate
 }: {
   section: MenuSectionT;
   expandedItems: Set<string>;
   onToggleExpanded: (itemKey: string) => void;
-  isCollapsed?: boolean;
   onNavigate: (href: string) => void;
 }) {
   return (
     <div className="flex flex-col w-full">
-      <div
-        className={`relative shrink-0 w-full transition-all duration-500 overflow-hidden ${
-          isCollapsed ? "h-0 opacity-0" : "h-10 opacity-100"
-        }`}
-        style={{ transitionTimingFunction: softSpringEasing }}
-      >
-        <div className="flex items-center h-10 px-4">
-          <div className="font-['Lexend:Bold',_sans-serif] text-[10px] text-neutral-600 uppercase tracking-[0.2em]">
-            {section.title}
-          </div>
+      <div className="flex items-center h-8 px-4">
+        <div className="font-['Lexend:Bold',_sans-serif] text-[10px] text-neutral-600 uppercase tracking-[0.2em]">
+          {section.title}
         </div>
       </div>
 
@@ -611,9 +549,8 @@ function MenuSection({
               isExpanded={isExpanded}
               onToggle={() => onToggleExpanded(itemKey)}
               onItemClick={() => item.href && onNavigate(item.href)}
-              isCollapsed={isCollapsed}
             />
-            {isExpanded && item.children && !isCollapsed && (
+            {isExpanded && item.children && (
               <div className="flex flex-col gap-1 mb-2">
                 {item.children.map((child, childIndex) => (
                   <SubMenuItem
@@ -643,8 +580,9 @@ export function TwoLevelSidebar() {
   const { user, org, role, spaces, fetchUserData } = useUserStore();
 
   useEffect(() => {
-    if (!user) fetchUserData();
-  }, [user, fetchUserData]);
+    fetchUserData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Derive active section from the current URL
   const currentSection = useMemo(() => {

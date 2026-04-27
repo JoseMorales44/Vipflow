@@ -18,7 +18,7 @@ export default function DashboardLayout({
         <div className="absolute inset-0 pointer-events-none opacity-[0.02] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-0" />
         
         {/* Contenido Dinámico con Scroll Independiente */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
+        <div className="flex-1 overflow-auto custom-scrollbar relative z-10">
           {children}
         </div>
       </main>

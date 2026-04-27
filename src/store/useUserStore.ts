@@ -65,16 +65,37 @@ export const useUserStore = create<UserState>((set) => ({
       let userRole = 'worker';
 
       if (membership) {
-        // Supabase joins can sometimes return an array even for 1:1 relations in types
         currentOrg = Array.isArray(membership.organizations) 
           ? membership.organizations[0] 
           : membership.organizations;
-        userRole = membership.role;
+        userRole = membership.role || 'worker';
       }
 
-      // 🚨 Fix: If user is the owner_id of the org, ensure they have the owner role
-      if (currentOrg && currentOrg.owner_id === authUser.id) {
-        userRole = 'owner';
+      // Most reliable ownership check: query organizations directly by owner_id
+      if (currentOrg) {
+        const { data: ownedOrg } = await supabase
+          .from('organizations')
+          .select('owner_id')
+          .eq('id', (currentOrg as { id: string }).id)
+          .single();
+
+        if (ownedOrg?.owner_id === authUser.id) {
+          userRole = 'owner';
+        }
+      }
+
+      // Fallback: check if any org lists this user as owner
+      if (userRole !== 'owner') {
+        const { data: ownedOrgs } = await supabase
+          .from('organizations')
+          .select('*')
+          .eq('owner_id', authUser.id)
+          .limit(1)
+          .maybeSingle();
+        if (ownedOrgs) {
+          currentOrg = ownedOrgs;
+          userRole = 'owner';
+        }
       }
 
       // Fetch spaces
