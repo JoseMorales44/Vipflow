@@ -8,7 +8,7 @@ import {
   CircleDotDashed,
   CircleX,
 } from "lucide-react";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup, type Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 // Type definitions
@@ -205,7 +205,7 @@ export function AgentPlan({ tasksData = initialTasks }: { tasksData?: Task[] }) 
     );
   };
 
-  const taskVariants = {
+  const taskVariants: Variants = {
     hidden: { opacity: 0, y: prefersReducedMotion ? 0 : -5 },
     visible: { 
       opacity: 1, 
@@ -241,7 +241,7 @@ export function AgentPlan({ tasksData = initialTasks }: { tasksData?: Task[] }) 
     }
   };
 
-  const subtaskVariants = {
+  const subtaskVariants: Variants = {
     hidden: { opacity: 0, x: prefersReducedMotion ? 0 : -10 },
     visible: { 
       opacity: 1, 
