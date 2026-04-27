@@ -15,7 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export default function InvitePage() {
+export default function InvitePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: paramId } = React.use(params); // Use the promise if we want, or keep useParams.
   const { id } = useParams();
   const router = useRouter();
   const [invitation, setInvitation] = useState<any>(null);

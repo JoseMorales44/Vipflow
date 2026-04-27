@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export default async function SpacePage({ params }: { params: { id: string } }) {
+export default async function SpacePage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies()
   const { id } = await params;
   
